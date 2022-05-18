@@ -11,4 +11,27 @@ class FindNumber
     @answer = answer.value
     @guess = guess
   end
+
+  # returns the average of the min and max values
+  def make_guess
+    (@min + @max) / 2
+  end
+
+  # returns true when guess equals the value of random_number
+  def game_over?
+    guess.equal?(answer)
+  end
+
+  # updates range
+  def update_range
+    if @guess < @answer
+      puts @answer
+      @min = @guess + 1
+    elsif @guess > @answer
+      puts @guess
+      puts @answer
+      puts @max
+      @max = @guess - 1
+    end
+  end
 end

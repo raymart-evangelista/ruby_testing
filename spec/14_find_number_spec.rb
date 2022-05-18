@@ -114,6 +114,7 @@ describe FindNumber do
     # Create a random_number double called 'number_guessing'. Allow the double
     # to receive 'value' and return the value of 8, in one of the two ways
     # explained above.
+    let(:number_guessing) { double('random_number', value: 8) }
 
     subject(:game_guessing) { described_class.new(0, 9, number_guessing) }
 
@@ -123,7 +124,8 @@ describe FindNumber do
     # It will fail with an undefined method error because you haven't
     # written #make_guess yet!
     context 'when min is 0 and max is 9' do
-      xit 'returns 4' do
+      it 'returns 4' do
+        expect(game_guessing.make_guess).to eq(4)
       end
     end
 
@@ -136,22 +138,30 @@ describe FindNumber do
     # random number double created inside this method's describe block.
 
     context 'when min is 5 and max is 9' do
-      xit 'returns 7' do
+      subject(:guess_two) { described_class.new(5, 9, number_guessing) }
+      it 'returns 7' do
+        expect(guess_two.make_guess).to eq(7)
       end
     end
 
     context 'when min is 8 and max is 9' do
-      xit 'returns 8' do
+      subject(:guess_three) { described_class.new(8, 9, number_guessing) }
+      it 'returns 8' do
+        expect(guess_three.make_guess).to eq(8)
       end
     end
 
     context 'when min is 0 and max is 3' do
-      xit 'returns 1' do
+      subject(:guess_four) { described_class.new(0, 3, number_guessing) }
+      it 'returns 1' do
+        expect(guess_four.make_guess).to eq(1)
       end
     end
 
     context 'when min and max both equal 3' do
-      xit 'returns 3' do
+      subject(:guess_five) { described_class.new(3, 3, number_guessing) }
+      it 'returns 3' do
+        expect(guess_five.make_guess).to eq(3)
       end
     end
   end
@@ -161,6 +171,8 @@ describe FindNumber do
     context 'when guess and random_number are equal' do
       # Create another subject and random_number double with meaningful names.
       # The subject will need to specify the number value of @guess.
+      let(:number_guessing) { double('random_number', value: 3) }
+      subject(:equal_first) { described_class.new(3, 3, number_guessing, 3) }
 
       # Allow the double to receive 'value' and return the same number as @guess.
 
@@ -168,7 +180,9 @@ describe FindNumber do
       # the random_number double's value above. Remember that this test will not
       # be able to pass yet because you haven't written the method!
 
-      xit 'is game over' do
+      it 'is game over' do
+        # allow(equal_first).to receive(:guess).and_return(3)
+        expect(equal_first).to be_game_over
       end
     end
 
@@ -179,7 +193,11 @@ describe FindNumber do
     # NOT equal the random_number double's value above.
 
     context 'when guess and random_number are not equal' do
-      xit 'is not game over' do
+      let(:mid_number) { double('random_number', value: 3) }
+      subject(:not_equal) { described_class.new(3, 3, mid_number, 4) }
+
+      it 'is not game over' do
+        expect(not_equal).to_not be_game_over
       end
     end
   end
@@ -196,6 +214,7 @@ describe FindNumber do
     # - min updates to one more than the guess
     # - max stays the same
 
+
     # When the guess is more than the answer:
     # - min stays the same
     # - max updates to one less than the guess
@@ -203,20 +222,33 @@ describe FindNumber do
     context 'when the guess is less than the answer' do
       subject(:low_guess_game) { described_class.new(0, 9, number_range, 4) }
 
-      xit 'updates min to 5' do
+      before do
+        low_guess_game.update_range
       end
 
-      xit 'does not update max' do
+      it 'updates min to 5' do
+        # expect(low_guess_game.update_range).to eq(5)
+        expect(low_guess_game.min).to eq(5)
+      end
+
+      it 'does not update max' do
+        expect(low_guess_game.max).to be(9)
       end
     end
 
     context 'when the guess is more than the answer' do
       subject(:high_guess_game) { described_class.new(0, 9, number_range, 9) }
 
-      xit 'does not update min' do
+      before do
+        high_guess_game.update_range
       end
 
-      xit 'updates max to 8' do
+      it 'does not update min' do
+        expect(high_guess_game.min).to be(0)
+      end
+
+      it 'updates max to 8' do
+        expect(high_guess_game.max).to be(8)
       end
     end
 
@@ -232,10 +264,49 @@ describe FindNumber do
     # Write a test for any 'edge cases' that you can think of, for example:
 
     context 'when the guess is 7, min=5, and max=8' do
-      xit 'updates min to the same value as max' do
+      # let(:number_range) { double('random_number', value: 3) }
+      subject(:guess) { described_class.new(5, 8, number_range, 7) }
+
+      before do
+        guess.update_range
       end
 
-      xit 'does not update max' do
+      it 'updates min to the same value as max' do
+        expect(guess.min).to eq(guess.max)
+      end
+
+      # it 'does not update max' do
+      #   expect(guess.max).to eq(8)
+      # end
+    end
+
+    context 'when guess is 9, min=3, and max=3' do
+      # let(:number_range) { double('random_number', value: 0) }
+      subject(:guess_two) { described_class.new(3, 3, number_range, 9) }
+
+      before do
+        guess_two.update_range
+      end
+
+      it 'updates max to 8' do
+        expect(guess_two.max).to be(8)
+      end
+
+      it 'does not update min' do
+        expect(guess_two.min).to eq(3)
+      end
+    end
+
+    context 'when the guess is 9, min=5, max=8' do
+      # let(:number_range) { double('random_number', value: 3) }
+      subject(:guess_three) { described_class.new(8, 10, number_range, 9) }
+
+      before do
+        guess_three.update_range
+      end
+
+      it 'updates max to be the same value as min' do
+        expect(guess_three.max).to eq(guess_three.min)
       end
     end
   end
